@@ -1,6 +1,3 @@
-// add another calculation
-// ask for code review (might as well know how to do it7)
-
 const rl = require('readline-sync');
 
 let loanAmount = NaN;
