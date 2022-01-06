@@ -77,13 +77,27 @@ function calculate() {
   print("Your monthly payment is $" + monthlyPayment.toFixed(2));
 }
 
+function validYesNo(input) {
+  // console.log(input);
+  // console.log(input.trim());
+  // console.log(input[0].toLowerCase())
+  if (input.trim() === "" ||
+    (input[0].toLowerCase() !== 'y' && input[0].toLowerCase() !== 'n')) {
+    print('That\'s not a valid answer. Please enter "y" (yes) or "n" (no) (without quotes)');
+    return false;
+  } else return true;
+}
+
 do {
+  console.clear();
   getLoanAmount();
   getApr();
   getDuration();
   calculate();
-  print("Would you like to try again? (y/n)");
-  computeAgain = rl.question();
-} while (computeAgain.toLowerCase() === 'y');
+  do {
+    print("Would you like to try again? (y/n)");
+    computeAgain = rl.question();
+  } while (!validYesNo(computeAgain));
+} while (computeAgain[0].toLowerCase() === 'y');
 
 print("See you again soon! Exiting...");
