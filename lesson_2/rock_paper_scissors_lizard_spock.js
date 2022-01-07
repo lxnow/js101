@@ -1,14 +1,56 @@
 const readline = require('readline-sync');
-const VALID_CHOICES = ['rock', 'paper', 'scissors', 'lizard', 'spock'];
+const DISPLAY_CHOICES = ['Rock', 'Paper', 'Scissors', 'Lizard', 'SpocK'];
+const VALID_CHOICES = [];
 let computerChoice;
 let choice;
 let playAgainChoice = true;
+let userScore = 0;
+let computerScore = 0;
+let winner;
+let winPoints = 3;
 
+function gameDone() {
+  if (userScore === winPoints || computerScore === winPoints) {
+    return true;
+  } else return false;
+}
 
-function displayWinner(choice, computerChoice) {
-  if (userWins(choice, computerChoice)) return 'You win!';
-  else if (computerWins(choice, computerChoice)) return 'Computer wins!';
-  else return "It's a tie";
+function displayFinalWinner() {
+  if (userScore < winPoints && computerScore < winPoints) {
+    prompt("Thanks for playing. See you again soon!");
+  } else if (userScore === winPoints) {
+    prompt(`Congratulations!!! You win with ${userScore} points. Thanks for playing!`);
+  } else {
+    prompt(`Computer wins with ${computerScore} points. Thanks for playing!`);
+  }
+}
+
+function updateScore(input) {
+  if (input === 'user') {
+    userScore += 1;
+  } else if (input === 'computer') {
+    computerScore += 1;
+  }
+}
+
+function chooseWinner(choice, computerChoice) {
+  if (userWins(choice, computerChoice)) return 'user';
+  else if (computerWins(choice, computerChoice)) return 'computer';
+  else return "tie";
+}
+
+function displayWinner(winner) {
+  switch (winner) {
+    case 'user':
+      prompt("You win this round!");
+      break;
+    case 'computer':
+      prompt("Computer wins this round!");
+      break;
+    case 'tie':
+      prompt("It's a tie.");
+  }
+  prompt(`Updating scores to [You: ${userScore}], [Computer: ${computerScore}]`);
 }
 
 function userWins(choice, computerChoice) {
@@ -43,10 +85,12 @@ function computerChoose() {
 
 function userChoose() {
   do {
-    prompt(`Choose one: ${VALID_CHOICES.join(', ')} (you can also enter the first letter)`);
+    prompt(`Choose one: ${DISPLAY_CHOICES.join(', ')} \n(you can also enter the capitalized letter, e.g. "k" for spocK, "l" for Lizard)`);
     choice = readline.question().toLowerCase();
     choice = expandUserChoice(choice);
-    if (!VALID_CHOICES.includes(choice)) prompt("That's not a valid choice. Please try again.");
+    if (!VALID_CHOICES.includes(choice)) {
+      prompt("That's not a valid choice. Please try again.");
+    }
   } while (!VALID_CHOICES.includes(choice));
   return choice;
 }
@@ -62,13 +106,10 @@ function expandUserChoice(input) {
     case 'l':
       input = 'lizard';
       break;
-    case 's':
-      prompt("Did you mean SCissors (sc) or SPock (sp)?");
-      break;
-    case "sc":
+    case "s":
       input = 'scissors';
       break;
-    case "sp":
+    case "k":
       input = 'spock';
       break;
   }
@@ -87,12 +128,27 @@ function playAgain() {
 }
 
 // main code starts here
+// initialize valid choices to small letters
+for (let counter = 0; counter < DISPLAY_CHOICES.length; counter++) {
+  VALID_CHOICES.push(DISPLAY_CHOICES[counter].toLowerCase());
+}
 
-while (playAgainChoice) {
+console.log(VALID_CHOICES);
+
+while (playAgainChoice || !gameDone()) {
   console.clear();
+  console.log(`Rock, Paper, Scissors, Lizard and Spock! First player to reach ${  winPoints} wins the game!`);
+  console.log(`### SCOREBOARD You: ${userScore} | Computer ${computerScore} ###`);
+  console.log(`---------------------------------------`);
   userChoose();
   computerChoose();
   prompt(`You chose ${choice}, computer chose ${computerChoice}`);
-  prompt(displayWinner(choice, computerChoice));
-  playAgain();
+  winner = chooseWinner(choice, computerChoice);
+  updateScore(winner);
+  displayWinner(winner);
+  if (gameDone()) {
+    break;
+  } else playAgain();
 }
+
+displayFinalWinner();
