@@ -2,17 +2,16 @@ const readline = require('readline-sync');
 const INITIAL_MARKER = ' ';
 const HUMAN_MARKER = 'X';
 const COMPUTER_MARKER = 'O';
-const ROUNDS_TO_WIN = 2;
+const WINROUNDS = 2;
 const FIRST_TURN = 'choose'; // strings player, computer, or choose
 let board = initializeBoard();
-let playerScore = 0;
-let computerScore = 0;
 let currentPlayer = 'player';
+let scores = {playerScore: 0, computerScore: 0};
 
 function displayBoard() {
   console.clear();
   console.log(`You are ${HUMAN_MARKER}. Computer is ${COMPUTER_MARKER}`);
-  console.log(`SCOREBOARD | You: ${playerScore}, Computer: ${computerScore}`);
+  console.log(`SCOREBOARD | You: ${scores.playerScore}, Computer: ${scores.computerScore}`);
   console.log('   0     1     2');
   console.log('      |     |');
   console.log(`0  ${board[0][0]}  |  ${board[0][1]}  |  ${board[0][2]}`);
@@ -239,7 +238,11 @@ function whoStarts() {
           computerChoosesSquare(board);
           currentPlayer = 'player';
           break;
-        } else break;
+        }
+        if (firstTurn === 'p') {
+          currentPlayer = 'player';
+          break;
+        }
       }
   }
 }
@@ -277,8 +280,27 @@ function playAgain() {
   } else return false;
 }
 
+function whoWins() {
+  if (scores.playerScore === WINROUNDS) {
+    prompt('Player wins the match!');
+    return true;
+  } else if (scores.computerScore === WINROUNDS) {
+    prompt('Computer wins the match!');
+    return true;
+  }
+  return false;
+}
+
+function addPoint(player) {
+  if (player === 'Player') {
+    scores.playerScore += 1;
+  } else {
+    scores.computerScore += 1;
+  }
+}
+
 while (true) {
-  while (playerScore < ROUNDS_TO_WIN || computerScore < ROUNDS_TO_WIN) {
+  while (scores.playerScore < WINROUNDS || scores.computerScore < WINROUNDS) {
     board = initializeBoard();
     whoStarts();
     while (true) {
@@ -289,31 +311,21 @@ while (true) {
     }
 
     if (someoneWon(board)) {
-      if (detectWinner(board) === 'Player') playerScore += 1;
-      else computerScore += 1;
+      addPoint(detectWinner(board));
       displayBoard(board);
       prompt(`${detectWinner(board)} won!`);
     } else {
       prompt("It's a tie!");
     }
-
-    if (playerScore === ROUNDS_TO_WIN) {
-      prompt('Player wins the match!');
-      break;
-    } else if (computerScore === ROUNDS_TO_WIN) {
-      prompt('Computers wins the match!');
-      break;
-    }
+    if (whoWins()) break;
     prompt('Play again? (y or n)');
     if (playAgain()) break;
   }
-  // if (playerScore === ROUNDS_TO_WIN) prompt('Player wins the match!');
-  // if (computerScore === ROUNDS_TO_WIN) prompt('Computer wins the match!');
 
-  prompt(`Do you want to do another match (first to ${ROUNDS_TO_WIN} wins)? (y or n)`);
+  prompt(`Do you want to do another match (first to ${WINROUNDS} wins)? (y or n)`);
   if (playAgain()) break;
-  playerScore = 0;
-  computerScore  = 0;
+  scores.playerScore = 0;
+  scores.computerScore  = 0;
   currentPlayer = FIRST_TURN;
 }
 
