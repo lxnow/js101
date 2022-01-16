@@ -2,7 +2,7 @@ const readline = require('readline-sync');
 const INITIAL_MARKER = ' ';
 const HUMAN_MARKER = 'X';
 const COMPUTER_MARKER = 'O';
-const ROUNDS_TO_WIN = 5;
+const ROUNDS_TO_WIN = 2;
 const FIRST_TURN = 'choose'; // strings player, computer, or choose
 let board = initializeBoard();
 let playerScore = 0;
@@ -41,19 +41,18 @@ function prompt(message) {
   console.log(`=> ${message}`);
 }
 
-function checkSquareEmpty(coordinates) {
+function squareEmpty(coordinates) {
   if (board[coordinates[0]][coordinates[1]] !== INITIAL_MARKER) {
-    if (currentPlayer === 'player') {
-      prompt("Sorry, that space is taken.");
-      return false;
-    }
+    if (currentPlayer === 'player') prompt("Sorry, that space is taken.");
+    return false;
   } else return true;
 }
 
 function checkValidInput(coordinates) {
   if (coordinates.length !== 2 || coordinates[0] < 0 || coordinates[0] > 2
     || coordinates[1] < 0 || coordinates[1] > 2 || isNaN(coordinates[0])
-    || isNaN(coordinates[1]) || coordinates[0] === '' || coordinates[1] === '') {
+    || isNaN(coordinates[1]) || coordinates[0] === '' || coordinates[1] === ''
+    || !Number.isInteger(coordinates[1]) || !Number.isInteger(coordinates[0])) {
     prompt("Sorry, that's an invalid choice. Please enter coordinates with a comma, e.g. 1, 2");
     return false;
   } else return true;
@@ -65,8 +64,8 @@ function playerChoosesSquare(board) {
   do {
     coordinates = readline.question();
     coordinates = coordinates.split(',');
-    coordinates = coordinates.map(coordinate => coordinate.trim());
-  } while (!checkValidInput(coordinates) || !checkSquareEmpty(coordinates));
+    coordinates = coordinates.map(coordinate => Number(coordinate.trim()));
+  } while (!checkValidInput(coordinates) || !squareEmpty(coordinates));
   board[coordinates[0]][coordinates[1]] = HUMAN_MARKER;
 }
 
@@ -77,8 +76,8 @@ function computerChoosesSquare(board) {
         let coordinates = ['',''];
         do {
           coordinates = coordinates.map(() => Math.floor(Math.random() * 3));
-        } while (!checkValidInput(coordinates) || !checkSquareEmpty(coordinates));
-        board[coordinates[0]][coordinates[1]] = COMPUTER_MARKER;      
+        } while (!checkValidInput(coordinates) || !squareEmpty(coordinates));
+        board[coordinates[0]][coordinates[1]] = COMPUTER_MARKER;
       }
     }
   }
@@ -99,19 +98,19 @@ function checkOpportunityToWin(array) {
 }
 
 function checkNextBest() {
-  if (checkSquareEmpty([1,1])) {
+  if (squareEmpty([1,1])) {
     board[1][1] = COMPUTER_MARKER;
     return true;
-  } else if (checkSquareEmpty([0,0])) {
+  } else if (squareEmpty([0,0])) {
     board[0][0] = COMPUTER_MARKER;
     return true;
-  } else if (checkSquareEmpty([0,2])) {
+  } else if (squareEmpty([0,2])) {
     board[0][2] = COMPUTER_MARKER;
     return true;
-  } else if (checkSquareEmpty([2,0])) {
+  } else if (squareEmpty([2,0])) {
     board[2][0] = COMPUTER_MARKER;
     return true;
-  } else if (checkSquareEmpty([2,2])) {
+  } else if (squareEmpty([2,2])) {
     board[2][2] = COMPUTER_MARKER;
     return true;
   } else return false;
@@ -205,23 +204,17 @@ function someoneWon(board) {
 }
 
 function detectWinner(board) {
-  let winningLineCheck = [];
+  let lineCheck = [];
   for (let counter = 0; counter < board.length; counter += 1) {
-    winningLineCheck = [];
-    for (let row = 0; row < 3; row += 1) {
-      winningLineCheck.push(board[row][counter]);
-    }
-    if (whoIsWinner(winningLineCheck)) return whoIsWinner(winningLineCheck);
-    winningLineCheck = [];
-    for (let col = 0; col < 3; col += 1) {
-      winningLineCheck.push(board[counter][col]);
-    }
-    if (whoIsWinner(winningLineCheck)) return whoIsWinner(winningLineCheck);
+    lineCheck = [board[0][counter], board[1][counter], board[2][counter]];
+    if (whoIsWinner(lineCheck)) return whoIsWinner(lineCheck);
+    lineCheck = [board[counter][0], board[counter][1], board[counter][2]];
+    if (whoIsWinner(lineCheck)) return whoIsWinner(lineCheck);
   }
-  winningLineCheck = [board[0][0], board[1][1], board[2][2]];
-  if (whoIsWinner(winningLineCheck)) return whoIsWinner(winningLineCheck);
-  winningLineCheck = [board[2][0], board[1][1], board[0][2]];
-  if (whoIsWinner(winningLineCheck)) return whoIsWinner(winningLineCheck);
+  lineCheck = [board[0][0], board[1][1], board[2][2]];
+  if (whoIsWinner(lineCheck)) return whoIsWinner(lineCheck);
+  lineCheck = [board[2][0], board[1][1], board[0][2]];
+  if (whoIsWinner(lineCheck)) return whoIsWinner(lineCheck);
   return null;
 }
 
@@ -235,8 +228,7 @@ function whoStarts() {
   let firstTurn;
   switch (FIRST_TURN) {
     case 'computer' :
-      chooseSquare(board, 'computer');
-      displayBoard();
+      computerChoosesSquare(board);
       currentPlayer = 'player';
       break;
     case 'choose' :
@@ -244,8 +236,7 @@ function whoStarts() {
         prompt('Who goes first? (P)layer or (C)omputer');
         firstTurn = readline.question().toLowerCase().trim()[0];
         if (firstTurn === 'c') {
-          chooseSquare(board, 'computer');
-          displayBoard();
+          computerChoosesSquare(board);
           currentPlayer = 'player';
           break;
         } else break;
@@ -260,7 +251,7 @@ function checkValidYN(answer) {
   } else if (answer === 'no' || answer === 'n') {
     return 'no';
   } else {
-    prompt('Please enter a valid response: (y)es or (n)o')
+    prompt('Please enter a valid response: (y)es or (n)o');
     return false;
   }
 }
@@ -274,6 +265,16 @@ function chooseSquare(board, player) {
 function alternatePlayer(player) {
   if (player === 'player') return 'computer';
   else return 'player';
+}
+
+function playAgain() {
+  let answer;
+  do {
+    answer = readline.question().toLowerCase();
+  } while (!checkValidYN(answer));
+  if (answer === 'no' || answer === 'n') {
+    return true;
+  } else return false;
 }
 
 while (true) {
@@ -303,26 +304,14 @@ while (true) {
       prompt('Computers wins the match!');
       break;
     }
-
     prompt('Play again? (y or n)');
-    let answer;
-    do {
-      answer = readline.question();
-    } while (!checkValidYN(answer));
-
-    if (checkValidYN(answer) === 'no') break;
-    // let answer = readline.question().toLowerCase()[0];
-    // if (answer === 'n') break;
+    if (playAgain()) break;
   }
+  // if (playerScore === ROUNDS_TO_WIN) prompt('Player wins the match!');
+  // if (computerScore === ROUNDS_TO_WIN) prompt('Computer wins the match!');
 
   prompt(`Do you want to do another match (first to ${ROUNDS_TO_WIN} wins)? (y or n)`);
-  let answer;
-  do {
-    answer = readline.question();
-  } while (!checkValidYN(answer));
-  
-  if (checkValidYN(answer) === 'no') break;
-
+  if (playAgain()) break;
   playerScore = 0;
   computerScore  = 0;
   currentPlayer = FIRST_TURN;
