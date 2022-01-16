@@ -9,9 +9,14 @@ let userTotal = 0;
 let dealerTotal = 0;
 let winner = ''; //'dealer' or 'user'
 let playAgain = ''; // (y)es or (n)o
+let userScore = 0;
+let dealerScore = 0;
+const GAMES = 3;
 const DRAMATIC_PAUSE = true;
+const MAX_NUMBER = 31;
+const DEALER_MIN_TOTAL = 27;
 
-function initializeGame() {
+function initializeRound() {
   userHand = [];
   dealerHand = [];
   userTotal = 0;
@@ -21,9 +26,9 @@ function initializeGame() {
   winner = '';
   playAgain = '';
   initializeDeck();
-  print("##################################");
-  print("# Welcome to lxman's Twenty One! #");
-  print("##################################");
+  print("#########################");
+  print(`# Welcome to lxman's ${MAX_NUMBER} #`);
+  print("#########################");
 }
 
 function initializeDeck() {
@@ -41,7 +46,7 @@ function print(message) {
 function minimizeAcesValue(deck, currentTotal) {
   let aceCards = deck.filter(card => card[1] ===  'A');
   let numAceCards = aceCards.length;
-  while (numAceCards > 0 && currentTotal > 21) {
+  while (numAceCards > 0 && currentTotal > MAX_NUMBER) {
     currentTotal -= 10;
     numAceCards -= 1;
   }
@@ -57,7 +62,7 @@ function calcTotal(deck) {
       sum += 11;
     } else sum += Number(card[1]);
   });
-  if (sum > 21) sum = minimizeAcesValue(deck, sum);
+  if (sum > MAX_NUMBER) sum = minimizeAcesValue(deck, sum);
   return sum;
 }
 
@@ -77,13 +82,13 @@ function startDeal() {
 
 function printCards(player) {
   if (player === 'user') {
-    let total = calcTotal(userHand);
+    // let total = calcTotal(userHand);
     print("You have" + userHand.map(card => " " + card[1]) + ".");
-    print(`Your total is ${total}.`);
+    print(`Your total is ${userTotal}.`);
   } else {
-    let total = calcTotal(dealerHand);
+    // let total = calcTotal(dealerHand);
     print("Dealer has" + dealerHand.map(card => " " + card[1]) + ".");
-    print(`Dealer's total is ${total}.`);
+    print(`Dealer's total is ${dealerTotal}.`);
   }
 }
 
@@ -105,7 +110,7 @@ function checkBust(player) {
   let total;
   if (player === 'user') total = userTotal;
   if (player === 'dealer') total = dealerTotal;
-  if (total > 21) {
+  if (total > MAX_NUMBER) {
     print(`${player[0].toUpperCase()}${player.slice(1)} went bust!`);
     return 'bust';
   } else return 'game on'; // don't use this return value, but if we don't write this down, eslint throws a consistent-return rule problem
@@ -126,6 +131,7 @@ function getUserMoves() {
       if (checkBust('user') === 'bust') return 'bust';
       move = '';
     } else {
+      userTotal = calcTotal(userHand);
       print('You stay...');
       return 'game on'; // need to return, but not the return value. but if we don't include a value, we get a 'consistent-return' error from eslint
     }
@@ -134,7 +140,7 @@ function getUserMoves() {
 
 function getDealerMoves() {
   dealerTotal = calcTotal(dealerHand);
-  while (dealerTotal < 17) {
+  while (dealerTotal < DEALER_MIN_TOTAL) {
     deal(dealerHand);
     print('Dealer hits...');
     printCardsHidden();
@@ -144,9 +150,13 @@ function getDealerMoves() {
 
 function identifyWinner() {
   if (!['dealer', 'user'].includes(winner)) {
-    if (userTotal > dealerTotal) winner = 'user';
-    else if (dealerTotal > userTotal) winner = 'dealer';
-    else winner = 'tie';
+    if (userTotal > dealerTotal) {
+      winner = 'user';
+      userScore += 1;
+    } else if (dealerTotal > userTotal) {
+      winner = 'dealer';
+      dealerScore += 1;
+    } else winner = 'tie';
   }
 }
 
@@ -156,7 +166,7 @@ function printWinner() {
   } else print(`${winner.toUpperCase()} wins!`);
 }
 
-function playGame() {
+function playRound() {
   if (getUserMoves() !== 'bust') {
     getDealerMoves();
     print('Dealer stays. Are you ready to reveal?');
@@ -167,12 +177,14 @@ function playGame() {
     if (checkBust('dealer') === 'bust') {
       printCards(dealerHand);
       winner = 'user';
+      userScore += 1;
     } else {
       printCards('dealer');
       printCards('user');
     }
   } else {
     winner = 'dealer';
+    dealerScore += 1;
   }
 }
 
@@ -184,20 +196,28 @@ function newRound() {
     if (!isInvalidAnswer(playAgain, ['y', 'yes', 'n', 'no'])) break;
   }
   if (playAgain === 'n' || playAgain === 'no') {
-    print("Thank you for playing 21 with me. Play again soon!");
+    print(`Thank you for playing ${MAX_NUMBER} with me. Let's play again soon!`);
     return 'stop';
   } else return 'game on'; // don't use this return value, but if we don't write this down, eslint throws a consistent-return rule problem
 }
 
 while (true) {
   console.clear();
-  initializeGame();
+  initializeRound();
   startDeal();
+  userTotal = calcTotal(userHand);
+  dealerTotal = calcTotal(dealerHand);
   printCardsHidden();
   printCards('user');
-  playGame();
+  playRound();
   identifyWinner();
   printWinner();
+  print(`Scoreboard: User is ${userScore}. Dealer is ${dealerScore}. First to ${GAMES} points win!`);
+  if (userScore === GAMES || dealerScore === GAMES) {
+    print(`${userScore === GAMES ? 'You are' : 'Dealer'} is the final winner!`);
+    userScore = 0;
+    dealerScore = 0;
+  }
   if (newRound() === 'stop') {
     break;
   }
