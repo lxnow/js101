@@ -27,7 +27,7 @@ function initializeRound() {
   playAgain = '';
   initializeDeck();
   print("#########################");
-  print(`# Welcome to lxman's ${MAX_NUMBER} #`);
+  print(`# Welcome to lxnow's ${MAX_NUMBER} #`);
   print("#########################");
 }
 
