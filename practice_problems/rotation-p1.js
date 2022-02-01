@@ -1,6 +1,8 @@
 function rotateArray(inputArr) {
   if (!Array.isArray(inputArr)) return undefined;
+
   if (inputArr.length === 0) return inputArr;
+
   let outputArr = [...inputArr];
   outputArr.push(outputArr.shift());
   return outputArr;
