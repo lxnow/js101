@@ -14,7 +14,7 @@ function calculateFibo(counter, finalPosition, previousVal = 1, currentVal = 1) 
   return calculateFibo(counter, finalPosition, previousVal, currentVal);
 }
 
-console.log(fibonacci(0));
+console.log(fibonacci(6));
 console.log(fibonacci('test'));
 console.log(fibonacci(1));       // 1
 console.log(fibonacci(2));       // 1
