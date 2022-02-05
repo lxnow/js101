@@ -1,8 +1,18 @@
 function sumSquareDifference(num) {
   let countArr = [num];
-  for (let counter = num; counter > 0; counter -= 1) {
-    countArr.unshift()
+  for (let counter = num - 1; counter > 0; counter -= 1) {
+    countArr.unshift(counter);
   }
+  return squareOfSums(countArr) - sumOfSquares(countArr);
+}
+
+function squareOfSums(arr) {
+  return arr.reduce((a, b) => a + b) ** 2;
+}
+
+function sumOfSquares(arr) {
+  let squaredElements = arr.map(element => element ** 2);
+  return squaredElements.reduce((a, b) => a + b);
 }
 
 console.log(sumSquareDifference(3));      // 22 --> (1 + 2 + 3)**2 - (1**2 + 2**2 + 3**2)
