@@ -2,12 +2,17 @@ function longestSentence(string) {
   let stringArr = string.split(/[?.!]/g);
   let wordsInSentence = stringArr.map(element => element.split(' '));
   let longestPosition = 0;
-  let longestCount = wordsInSentence[0].length;
+  let longestCount = wordsInSentence[0][0].length;
+  let longestWord;
 
   for (let counter = 0; counter < wordsInSentence.length; counter += 1) {
-    if (wordsInSentence[counter].length > longestCount) {
-      longestPosition = counter;
-      longestCount = wordsInSentence[counter].length;
+    for (let subCounter = 0; subCounter < wordsInSentence[counter].length; subCounter += 1) {
+      if (wordsInSentence[counter][subCounter].length > longestCount) {
+        longestPosition = counter;
+        longestCount = wordsInSentence[counter][subCounter].length;
+
+        longestWord = wordsInSentence[counter][subCounter];
+      }
     }
   }
 
@@ -16,7 +21,7 @@ function longestSentence(string) {
   longestSen += lastChar;
 
   console.log(longestSen + '\n');
-  console.log(`The longest sentence has ${wordsInSentence[longestPosition].length} words.`)
+  console.log(`The longest word is ${longestWord} and has ${longestCount} characters.`);
 }
 
 
