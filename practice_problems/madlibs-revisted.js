@@ -5,11 +5,48 @@ const WORDS = {
   '%adverb': ['literally', 'lazily', 'crossly', 'zestfully', 'loyally', 'kookily', 'instantly', 'obnoxiously', 'helpfully', 'loftily'],
 }
 
-
 let template = 'the %noun %verb the %adjective %noun very %adverb. The %adjective %noun was quite unhappy about what happened and %adverb %verb away.'
-
-
 madlibs(template);
+
+function madlibs(template) {
+  templateArr = template.split(' ');
+  let replacedArr = templateArr.map(element => {
+    if (element.match(/%noun[?.!]*/)) {
+      return replaceWord('%noun', element);
+    }
+    if (element.match(/%adjective[?.!]*/)) {
+      return replaceWord('%adjective', element);
+    }
+    if (element.match(/%adverb[?.!]*/)) {
+      return replaceWord('%adverb', element);
+    }
+    if (element.match(/%verb[?.!]*/)) {
+      return replaceWord('%verb', element);
+    } else return element;       
+  })
+  console.log(replacedArr.join(' '));
+}
+
+function replaceWord(typeStr, word) {
+  if (word.length > typeStr.length) {
+      let lastChar = word.slice(typeStr.length);
+      return pickRandomWord(typeStr) + lastChar;        
+    } else return pickRandomWord(typeStr);  
+}
+
+function pickRandomWord(typeOfWord) {
+  let randomNum = Math.random();
+  let counter = 0;
+  let wordChoiceArr = WORDS[typeOfWord];  
+  while (true) {
+    if (randomNum > (counter / wordChoiceArr.length) && 
+      randomNum <= (counter + 1) / wordChoiceArr.length) {
+      return wordChoiceArr.splice(counter, 1)[0];
+    } counter++;
+  }
+}
+
+
 
 
 /*
@@ -53,40 +90,3 @@ pickRandomWord(typeOfWord) {
 
 */
 
-function madlibs(template) {
-  templateArr = template.split(' ');
-  let replacedArr = templateArr.map(element => {
-    if (element.match(/%noun[?.!]*/)) {
-      return replaceWord('%noun', element);
-    }
-    if (element.match(/%adjective[?.!]*/)) {
-      return replaceWord('%adjective', element);
-    }
-    if (element.match(/%adverb[?.!]*/)) {
-      return replaceWord('%adverb', element);
-    }
-    if (element.match(/%verb[?.!]*/)) {
-      return replaceWord('%verb', element);
-    } else return element;       
-  })
-  console.log(replacedArr.join(' '));
-}
-
-function replaceWord(typeStr, word) {
-  if (word.length > typeStr.length) {
-      let lastChar = word.slice(typeStr.length);
-      return pickRandomWord(typeStr) + lastChar;        
-    } else return pickRandomWord(typeStr);  
-}
-
-function pickRandomWord(typeOfWord) {
-  let randomNum = Math.random();
-  let counter = 0;
-  let wordChoiceArr = WORDS[typeOfWord];  
-  while (true) {
-    if (randomNum > (counter / wordChoiceArr.length) && 
-      randomNum <= (counter + 1) / wordChoiceArr.length) {
-      return wordChoiceArr.splice(counter, 1)[0];
-    } counter++;
-  }
-}
