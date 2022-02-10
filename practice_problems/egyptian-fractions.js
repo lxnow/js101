@@ -24,7 +24,7 @@ rules:
 >> find the biggest unit fraction and _take it_ from t/b
 >> with whatever is left (difference), repeat the process
 >> FIRST, divide denom by numer and round up. This is the new denom
->> subtract previous fraction result from t/b
+>> subtract previous fraction result from t/b, this is the new current fraction
 >> repeat FIRST on the current fraction, then subtract from remainder
 (current evalFraction is t/b then remainder...)
 >> if the final fraction is a UNIT fraction, i.e. the numer is a factor of denom, then we can stop
@@ -62,19 +62,21 @@ function egyptian(fractionObj) {
   console.log(`----`)
 
   answerArr.push(biggestDenom);
-  while (denom !== 1) { //what is the right condition?
-    // evalFraction = Fraction(numer).div(denom).sub(Fraction(1).div(biggestDenom));
-    // evalFraction = Fraction(1, biggestDenom);
-    console.log(`evalFraction is ${evalFraction}`);
+  
+  while (denom % numer !== 0 || denom <= numer) {
+    evalFraction = Fraction(numer).div(denom).sub(Fraction(1).div(biggestDenom));
+    // evalFraction = Fraction(numer).div(denom);
+    console.log(`evalFraction is ${JSON.stringify(evalFraction)}`);
     denom = evalFraction.d;
     numer = evalFraction.n;
     biggestDenom = Math.ceil(denom / numer);
+    answerArr.push(biggestDenom);
     // console.log(denom);
     // console.log(numer);
     // console.log(biggestDenom);
     break
   }
 
-  return 'end';
+  return answerArr;
 
 }
