@@ -1,6 +1,7 @@
 const Fraction = require('fraction.js');
 
-console.log(egyptian(new Fraction(2, 1))); // -> [1, 2, 3, 6]
+console.log(egyptian(new Fraction(5,91)))
+// console.log(egyptian(new Fraction(2, 1))); // -> [1, 2, 3, 6]
 // console.log(egyptian(new Fraction(137, 60))); // -> [1, 2, 3, 4, 5]
 // console.log(egyptian(new Fraction(3, 1))); // -> [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 230, 57960]
 
@@ -63,7 +64,7 @@ function egyptian(fractionObj) {
 
   answerArr.push(biggestDenom);
   
-  while (denom % numer !== 0 || denom <= numer) {
+  while (denom % numer !== 0) {
     evalFraction = Fraction(numer).div(denom).sub(Fraction(1).div(biggestDenom));
     // evalFraction = Fraction(numer).div(denom);
     console.log(`evalFraction is ${JSON.stringify(evalFraction)}`);
@@ -74,7 +75,6 @@ function egyptian(fractionObj) {
     // console.log(denom);
     // console.log(numer);
     // console.log(biggestDenom);
-    break
   }
 
   return answerArr;
