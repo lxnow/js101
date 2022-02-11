@@ -1,6 +1,13 @@
 console.log(isBlockWord('BATCH'));      // true
 console.log(isBlockWord('BUTCH'));      // false
 console.log(isBlockWord('jest'));       // true
+console.log(isBlockWord('mud')) //true
+console.log(isBlockWord('GTA')) // false
+console.log(isBlockWord('floW'));       // true
+console.log(isBlockWord('APPLE'));      // false
+console.log(isBlockWord('apple'));      // false
+console.log(isBlockWord('apPLE'));      // false
+console.log(isBlockWord('Box'));        // false
 
 function isBlockWord(word) {
 
@@ -8,7 +15,6 @@ function isBlockWord(word) {
     'H:U', 'V:I', 'L:Y', 'Z:M']
 
   let wordArr = word.toUpperCase().split('');
-  console.log(wordArr);
   for (let counter = 0; counter < wordArr.length; counter += 1) {
     let char = wordArr[counter];
     if (BLOCKS.some(element => containsLetter(element, char))) {
