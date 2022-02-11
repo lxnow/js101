@@ -1,0 +1,24 @@
+{
+  "en": {
+    "welcome" : "Welcome to Calculator!",
+    "first number" : "What's the first number?",
+    "second number" : "What's the second number?",
+    "not a number" : "Hmm... that doesn't look like a valid number.",
+    "operation" : "What operation would you like to perform?\n1) Add 2) Subtract 3) Multiply 4) Divide",
+    "must choose" : "Must choose 1, 2, 3 or 4",
+    "try again" : "Would you like to run another calculation? (y/n)",
+    "exiting" : "Thanks for using Calculator! Exiting...",
+    "result" : "`The result is`"
+  },
+  "ph": {
+    "welcome" : "Maligayang pagdating sa Calculator!",
+    "first number" : "Ano ang unang numero?",
+    "second number" : "Ano ang pangalawang numero?",
+    "not a number" : "Hmm... mukhang hindi valid number yan.",
+    "operation" : "Anong operasyon ang gusto mong gawin?\n1) Idagdag 2) Ibawas 3) I-multiply 4) Hatiin",
+    "must choose" : "Dapat pumili ng 1, 2, 3 o 4",
+    "try again" : "Gusto mo bang magpatakbo ng isa pang pagkalkula? (y/n)",
+    "exiting" : "Salamat sa paggamit ng Calculator! Lumalabas...",
+    "result" : "`Ang resulta ay`"
+  }
+}
